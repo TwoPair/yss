@@ -40,62 +40,89 @@ I2c::I2c(I2C_TypeDef *peri, void (*clockFunc)(bool en), void (*nvicFunc)(bool en
     mPeri = peri;
 }
 
-bool I2c::init(unsigned char speed)
+bool I2c::setSpeed(unsigned char speed)
 {
+    register unsigned int reg;
+
     switch (speed)
     {
     case define::i2c::speed::STANDARD:
-        setI2cPresc(mPeri, 3);
-        setI2cScll(mPeri, 0xc7);
-        setI2cSclh(mPeri, 0xc3);
-        setI2cSdaDel(mPeri, 0x02);
-        setI2cSclDel(mPeri, 0x04);
+#if defined(STM32F0)
+        reg = 1 << I2C_TIMINGR_PRESC_Pos |
+              0x13 << I2C_TIMINGR_SCLL_Pos |
+              0x0F << I2C_TIMINGR_SCLH_Pos |
+              0x02 << I2C_TIMINGR_SDADEL_Pos |
+              0x04 << I2C_TIMINGR_SCLDEL_Pos;
+#elif defined(STM32F7)
+        reg = 3 << I2C_TIMINGR_PRESC_Pos |
+              0x13 << I2C_TIMINGR_SCLL_Pos |
+              0x0F << I2C_TIMINGR_SCLH_Pos |
+              0x02 << I2C_TIMINGR_SDADEL_Pos |
+              0x04 << I2C_TIMINGR_SCLDEL_Pos;
+#endif
         break;
     case define::i2c::speed::FAST:
-        setI2cPresc(mPeri, 1);
-        setI2cScll(mPeri, 0x09);
-        setI2cSclh(mPeri, 0x03);
-        setI2cSdaDel(mPeri, 0x02);
-        setI2cSclDel(mPeri, 0x03);
+        reg = 1 << I2C_TIMINGR_PRESC_Pos |
+              0x09 << I2C_TIMINGR_SCLL_Pos |
+              0x03 << I2C_TIMINGR_SCLH_Pos |
+              0x02 << I2C_TIMINGR_SDADEL_Pos |
+              0x03 << I2C_TIMINGR_SCLDEL_Pos;
         break;
     case define::i2c::speed::FAST_PLUS:
-        setI2cPresc(mPeri, 0);
-        setI2cScll(mPeri, 0x04);
-        setI2cSclh(mPeri, 0x02);
-        setI2cSdaDel(mPeri, 0x00);
-        setI2cSclDel(mPeri, 0x02);
+        reg = 0 << I2C_TIMINGR_PRESC_Pos |
+              0x04 << I2C_TIMINGR_SCLL_Pos |
+              0x02 << I2C_TIMINGR_SCLH_Pos |
+              0x00 << I2C_TIMINGR_SDADEL_Pos |
+              0x02 << I2C_TIMINGR_SCLDEL_Pos;
         break;
+    default:
+        return false;
     }
 
-    setI2cTxDmaEn(mPeri, true);
-    setI2cRxDmaEn(mPeri, true);
-
-    setI2cEn(mPeri, true);
+    mPeri->TIMINGR = reg;
 
     return true;
 }
 
-bool I2c::initAsSlave(void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2)
+bool I2c::init(unsigned char speed)
 {
-	register unsigned int reg;
+    // 장치 비활성화
+    mPeri->CR1 = 0;
 
-	mPeri->OAR1 &= ~I2C_OAR1_OA1EN_Msk;
-	mPeri->OAR2 &= ~I2C_OAR2_OA2EN_Msk;
-	
-	reg =  I2C_OAR1_OA1EN_Msk | (addr1 & 0xFE) << I2C_OAR1_OA1_Pos;
-	mPeri->OAR1 = reg;
-	
-	if(addr2 > 0)
-	{
-		reg = 0;
-		reg |=  I2C_OAR2_OA2EN_Msk | (addr2 & 0xFE);
-		mPeri->OAR2 = reg;
-	}
+    // 타이밍 설정
+    if (setSpeed(speed) == false)
+        return false;
 
-	reg = I2C_CR1_RXDMAEN_Msk | I2C_CR1_TXDMAEN_Msk | I2C_CR1_ADDRIE_Msk | I2C_CR1_PE_Msk;
-	mPeri->CR1 = reg;
+    // DMA_RX, DMA_TX, 장치 활성화 설정
+    mPeri->CR1 = I2C_CR1_PE_Msk | I2C_CR1_RXDMAEN_Msk | I2C_CR1_TXDMAEN_Msk;
 
-	return true;
+    return true;
+}
+
+bool I2c::initAsSlave(unsigned char speed, void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2)
+{
+    // 장치 비활성화
+    mPeri->CR1 = 0;
+
+    // 주소 레지스터1, 2 비활성화
+    mPeri->OAR1 = 0;
+    mPeri->OAR2 = 0;
+
+    // 타이밍 설정
+    if (setSpeed(speed) == false)
+        return false;
+
+    // 주소 레지스터1 설정
+    mPeri->OAR1 = I2C_OAR1_OA1EN_Msk | (addr1 & 0xFE) << I2C_OAR1_OA1_Pos;
+
+    // 주소 레지스터2에 값이 있으면 설정
+    if (addr2 > 0)
+        mPeri->OAR2 = I2C_OAR2_OA2EN_Msk | (addr2 & 0xFE);
+
+    // DMA_RX, DMA_TX, 주소 일치 인터럽트, 장치 활성화 설정
+    mPeri->CR1 = I2C_CR1_RXDMAEN_Msk | I2C_CR1_TXDMAEN_Msk | I2C_CR1_ADDRIE_Msk | I2C_CR1_PE_Msk;
+
+    return true;
 }
 
 inline void waitUntilComplete(I2C_TypeDef *peri)
