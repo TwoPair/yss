@@ -48,7 +48,6 @@ int main(void)
 	i2c1.setClockEn(true);
 	i2c1.initAsSlave(define::i2c::speed::STANDARD, gI2c1RcvBuff, 32, 0xA8);
 
-
     const char *str = "hello world!!\n\r";
 
     while (1)
