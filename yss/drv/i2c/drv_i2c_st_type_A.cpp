@@ -62,18 +62,34 @@ bool I2c::setSpeed(unsigned char speed)
 #endif
         break;
     case define::i2c::speed::FAST:
+#if defined(STM32F0)
+        reg = 0 << I2C_TIMINGR_PRESC_Pos |
+              0x09 << I2C_TIMINGR_SCLL_Pos |
+              0x03 << I2C_TIMINGR_SCLH_Pos |
+              0x01 << I2C_TIMINGR_SDADEL_Pos |
+              0x03 << I2C_TIMINGR_SCLDEL_Pos;
+#elif defined(STM32F7)
         reg = 1 << I2C_TIMINGR_PRESC_Pos |
               0x09 << I2C_TIMINGR_SCLL_Pos |
               0x03 << I2C_TIMINGR_SCLH_Pos |
               0x02 << I2C_TIMINGR_SDADEL_Pos |
               0x03 << I2C_TIMINGR_SCLDEL_Pos;
+#endif
         break;
     case define::i2c::speed::FAST_PLUS:
+#if defined(STM32F0)
+        reg = 0 << I2C_TIMINGR_PRESC_Pos |
+              0x06 << I2C_TIMINGR_SCLL_Pos |
+              0x03 << I2C_TIMINGR_SCLH_Pos |
+              0x00 << I2C_TIMINGR_SDADEL_Pos |
+              0x01 << I2C_TIMINGR_SCLDEL_Pos;
+#elif defined(STM32F7)
         reg = 0 << I2C_TIMINGR_PRESC_Pos |
               0x04 << I2C_TIMINGR_SCLL_Pos |
               0x02 << I2C_TIMINGR_SCLH_Pos |
               0x00 << I2C_TIMINGR_SDADEL_Pos |
               0x02 << I2C_TIMINGR_SCLDEL_Pos;
+#endif
         break;
     default:
         return false;
@@ -134,15 +150,16 @@ inline void waitUntilComplete(I2C_TypeDef *peri)
 #define setNbytes(data, x) setRegField(data, 0xFFUL, x, 16)
 #define setSaddr(data, x) setRegField(data, 0x3FFUL, x, 0)
 
-bool I2c::send(unsigned char addr, void *src, unsigned long size, unsigned long timeout)
+bool I2c::send(unsigned char addr, void *src, unsigned int size, unsigned int timeout)
 {
-    unsigned long cr2 = I2C_CR2_START;
-    volatile unsigned long isr;
+    register unsigned int cr2 = I2C_CR2_START;
+    register unsigned int isr;
     bool rt;
 
     if (mTxStream)
     {
         mPeri->ICR = 0xffff;
+//		cr2 = (cr2 & ~(I2C_CR2_NBYTES_Msk | I2C_CR2_NBYTES_Msk)) | ((size & 0xFF) << I2C_CR2_NBYTES_Pos | );
         setNbytes(cr2, size);
         setSaddr(cr2, addr);
         mPeri->CR2 = cr2;
@@ -173,7 +190,7 @@ bool I2c::send(unsigned char addr, void *src, unsigned long size, unsigned long 
         return false;
 }
 
-bool I2c::receive(unsigned char addr, void *des, unsigned long size, unsigned long timeout)
+bool I2c::receive(unsigned char addr, void *des, unsigned int size, unsigned int timeout)
 {
     unsigned long cr2 = I2C_CR2_START | I2C_CR2_RD_WRN;
     volatile unsigned long isr;

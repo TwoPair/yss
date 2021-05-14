@@ -67,13 +67,16 @@ namespace Bsp
 {
 void init(void)
 {
+	// I2C
     //UART1 초기화 9600 baudrate, 수신 링버퍼 크기는 256 바이트
-    using namespace define::gpio;
-    gpioB.setToAltFunc(6, altfunc::PB6_USART1_TX);
-    gpioB.setToAltFunc(7, altfunc::PB7_USART1_RX);
+    //using namespace define::gpio;
+    //gpioB.setToAltFunc(6, altfunc::PB6_USART1_TX);
+    //gpioB.setToAltFunc(7, altfunc::PB7_USART1_RX);
 
-    uart1.setClockEn(true);
-    uart1.init(9600, gUartRcvBuff, 256);
-    uart1.setIntEn(true);
+    //uart1.setClockEn(true);
+    //uart1.init(9600, gUartRcvBuff, 256);
+    //uart1.setIntEn(true);
+
+	// I2C1 초기화 
 }
 }
