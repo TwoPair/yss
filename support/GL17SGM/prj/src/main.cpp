@@ -43,7 +43,7 @@ int main(void)
     Bsp::init();
 
     // 세그먼트 초기화
-    Segment::init();
+//    Segment::init();
 
     const char *str = "hello world!!\n\r";
 
@@ -69,20 +69,20 @@ int main(void)
     while (1)
     {
         // uart2로 str 전송
-        if (uartTime.getMsec() >= 500)
-        {
-            uartTime.reset();
-            uart1.send(str, strlen(str), 1000);
-        }
+        //if (uartTime.getMsec() >= 500)
+        //{
+        //    uartTime.reset();
+        //    uart1.send(str, strlen(str), 1000);
+        //}
 
         // 수신 데이터가 없을 경우 -1을 반환
-        rcvData = uart1.get();
-        if (rcvData >= 0)
-        {
-            debug_printf("input = 0x%02x[%c]\n", rcvData, rcvData);
-        }
+        //rcvData = uart1.get();
+        //if (rcvData >= 0)
+        //{
+        //    debug_printf("input = 0x%02x[%c]\n", rcvData, rcvData);
+        //}
 
-        Segment::setNumber(time::getRunningMsec() % 99999);
+        //Segment::setNumber(time::getRunningMsec() % 99999);
     }
     return 0;
 }

@@ -22,6 +22,7 @@
 #include <yss/yss.h>
 
 static unsigned char gUartRcvBuff[256];
+static unsigned char gI2cRcvBuff[16];
 
 void initSystem(void)
 {
@@ -67,9 +68,10 @@ namespace Bsp
 {
 void init(void)
 {
-	// I2C
+    using namespace define::gpio;
+
+	// I2C 풀업을 UART 핀을 사용함 그래서 I2C 사용중엔 UART를 OUTPUT으로 설정하고 High를 줘야 함.
     //UART1 초기화 9600 baudrate, 수신 링버퍼 크기는 256 바이트
-    //using namespace define::gpio;
     //gpioB.setToAltFunc(6, altfunc::PB6_USART1_TX);
     //gpioB.setToAltFunc(7, altfunc::PB7_USART1_RX);
 
@@ -78,5 +80,17 @@ void init(void)
     //uart1.setIntEn(true);
 
 	// I2C1 초기화 
+	// R9와 R10에 10k옴을 부착하고 UART 라인에 High 줘서 풀업 제공
+	gpioB.setAsOutput(6);
+	gpioB.setAsOutput(7);
+
+	gpioB.setOutput(6, true);
+	gpioB.setOutput(7, true);
+
+	gpioB.setAsAltFunc(8, altfunc::PB8_I2C1_SCL, ospeed::MID, otype::OPEN_DRAIN);
+	gpioB.setAsAltFunc(9, altfunc::PB9_I2C1_SDA, ospeed::MID, otype::OPEN_DRAIN);
+
+	i2c1.setClockEn(true);
+	i2c1.initAsSlave(define::i2c::speed::STANDARD, gI2cRcvBuff, 16, 0x5A);
 }
 }
