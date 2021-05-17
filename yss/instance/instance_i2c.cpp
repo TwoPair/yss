@@ -19,7 +19,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#include <drv/nvic/nvic.h>
+#include <instance/instance_nvic.h>
 #include <instance/instance_clock.h>
 #include <instance/instance_dma.h>
 #include <instance/instance_i2c.h>
@@ -28,6 +28,11 @@
 static void setI2c1ClockEn(bool en)
 {
     clock.peripheral.setI2c1En(en);
+}
+
+static void setI2c1IntEn(bool en)
+{
+	nvic.setI2c1En(en);
 }
 
 static void resetI2c1(void)
@@ -43,7 +48,7 @@ static unsigned int getI2c1ClockFrequency(void)
 drv::I2c i2c1(
     I2C1,
     setI2c1ClockEn,
-    0,
+    setI2c1IntEn,
     resetI2c1,
     YSS_DMA_MAP_I2C1_TX_STREAM,
     YSS_DMA_MAP_I2C1_RX_STREAM,
@@ -59,6 +64,11 @@ static void setI2c2ClockEn(bool en)
     clock.peripheral.setI2c2En(en);
 }
 
+static void setI2c2IntEn(bool en)
+{
+	nvic.setI2c2En(en);
+}
+
 static void resetI2c2(void)
 {
     clock.peripheral.resetI2c2();
@@ -72,7 +82,7 @@ static unsigned int getI2c2ClockFrequency(void)
 drv::I2c i2c2(
     I2C2,
     setI2c2ClockEn,
-    0,
+    setI2c2IntEn,
     resetI2c2,
     YSS_DMA_MAP_I2C2_TX_STREAM,
     YSS_DMA_MAP_I2C2_RX_STREAM,

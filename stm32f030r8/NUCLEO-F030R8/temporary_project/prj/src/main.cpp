@@ -37,18 +37,35 @@ int main(void)
 
     //UART 초기화 9600 baudrate, 수신 링버퍼 크기는 256 바이트
     using namespace define::gpio;
-    gpioA.setAsAltFunc(2, altfunc::PA2_USART2_TX);
-    gpioA.setAsAltFunc(3, altfunc::PA3_USART2_RX);
+    //gpioA.setAsAltFunc(2, altfunc::PA2_USART2_TX);
+    //gpioA.setAsAltFunc(3, altfunc::PA3_USART2_RX);
 
     //uart2.setClockEn(true);
     //uart2.init(9600, gUart2RcvBuff, 256);
     //uart2.setIntEn(true);
 
 	// I2C1 초기화
-	i2c1.setClockEn(true);
-	i2c1.initAsSlave(define::i2c::speed::STANDARD, gI2c1RcvBuff, 32, 0xA8);
+	gpioB.setAsAltFunc(10, altfunc::PB10_I2C2_SCL, ospeed::MID, otype::OPEN_DRAIN);
+	gpioA.setAsOutput(8);
+	gpioA.setOutput(8, true);
+
+	gpioB.setAsAltFunc(11, altfunc::PB11_I2C2_SDA, ospeed::MID, otype::OPEN_DRAIN);
+	gpioB.setAsOutput(12);
+	gpioB.setOutput(12, true);
+
+	i2c2.setClockEn(true);
+	i2c2.initAsSlave(define::i2c::speed::STANDARD, gI2c1RcvBuff, 32, 0x5A);
+//	i2c2.init(define::i2c::speed::STANDARD);
+	i2c2.setIntEn(true);
 
     const char *str = "hello world!!\n\r";
+	
+//	i2c2.send(0x5A, (void*)str, 1, 100000);
+
+	while(1)
+	{
+		
+	}
 
     while (1)
     {

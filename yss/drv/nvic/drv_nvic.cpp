@@ -474,7 +474,7 @@ void Nvic::setI2c1En(bool en)
 {
 #if defined(STM32F4) || defined(STM32F7) || defined(STM32F1) || defined(STM32G4)
     setNvicIntEn(I2C1_EV_IRQn, en);
-#elif defined(STM32L0)
+#elif defined(STM32L0) ||defined(STM32F0)
     setNvicIntEn(I2C1_IRQn, en);
 #endif
 }
@@ -485,7 +485,7 @@ void Nvic::setI2c2En(bool en)
 {
 #if defined(STM32F4) || defined(STM32F7) || defined(STM32F1) || defined(STM32G4)
     setNvicIntEn(I2C2_EV_IRQn, en);
-#elif defined(STM32L0)
+#elif defined(STM32L0) ||defined(STM32F0)
     setNvicIntEn(I2C2_IRQn, en);
 #endif
 }

@@ -48,7 +48,7 @@ bool I2c::setSpeed(unsigned char speed)
     {
     case define::i2c::speed::STANDARD:
 #if defined(STM32F0)
-        reg = 1 << I2C_TIMINGR_PRESC_Pos |
+        reg = 10 << I2C_TIMINGR_PRESC_Pos |
               0x13 << I2C_TIMINGR_SCLL_Pos |
               0x0F << I2C_TIMINGR_SCLH_Pos |
               0x02 << I2C_TIMINGR_SDADEL_Pos |
