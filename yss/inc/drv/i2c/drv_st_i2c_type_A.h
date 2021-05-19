@@ -39,7 +39,7 @@ class I2c : public sac::Comm, public Drv
     Stream *mTxStream;
     Stream *mRxStream;
 
-	bool setSpeed(unsigned char speed);
+    bool setSpeed(unsigned char speed);
 
   public:
     I2c(I2C_TypeDef *peri, void (*clockFunc)(bool en), void (*nvicFunc)(bool en), void (*resetFunc)(void), Stream *txStream, Stream *rxStream, unsigned char txChannel, unsigned char rxChanne, unsigned int (*getClockFrequencyFunc)(void), unsigned short priority);

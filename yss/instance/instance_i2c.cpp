@@ -103,7 +103,7 @@ extern "C"
 {
     void I2C2_IRQHandler(void)
     {
-//		i2c2.
+        //		i2c2.
     }
 }
 #endif
@@ -140,7 +140,7 @@ extern "C"
 {
     void I2C2_IRQHandler(void)
     {
-		i2cs2.isr();
+        i2cs2.isr();
     }
 }
 #endif

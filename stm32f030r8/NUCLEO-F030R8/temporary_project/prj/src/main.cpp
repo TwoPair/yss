@@ -27,10 +27,17 @@
 
 unsigned char gUart2RcvBuff[256];
 unsigned char gI2c1RcvBuff[32];
+unsigned char gI2c1SendBuff[32];
+
+void isr_receivedI2cs2Data(unsigned char data, unsigned short index)
+{
+	debug_printf("Rcv[%d]0x%02x\n", index, data);
+}
 
 int main(void)
 {
     signed short rcvData;
+    unsigned char data[16];
 
     // 이순신 os 초기화
     yss::init();
@@ -44,27 +51,33 @@ int main(void)
     //uart2.init(9600, gUart2RcvBuff, 256);
     //uart2.setIntEn(true);
 
-	// I2C1 초기화
-	gpioB.setAsAltFunc(10, altfunc::PB10_I2C2_SCL, ospeed::MID, otype::OPEN_DRAIN);
-	gpioA.setAsOutput(8);
-	gpioA.setOutput(8, true);
+    // I2C1 초기화
+    gpioB.setAsAltFunc(10, altfunc::PB10_I2C2_SCL, ospeed::MID, otype::OPEN_DRAIN);
+    gpioA.setAsOutput(8);
+    gpioA.setOutput(8, true);
 
-	gpioB.setAsAltFunc(11, altfunc::PB11_I2C2_SDA, ospeed::MID, otype::OPEN_DRAIN);
-	gpioB.setAsOutput(12);
-	gpioB.setOutput(12, true);
+    gpioB.setAsAltFunc(11, altfunc::PB11_I2C2_SDA, ospeed::MID, otype::OPEN_DRAIN);
+    gpioB.setAsOutput(12);
+    gpioB.setOutput(12, true);
 
-	i2cs2.setClockEn(true);
-	i2cs2.init(define::i2c::speed::STANDARD, gI2c1RcvBuff, 32, 0x5A);
-	i2cs2.setIntEn(true);
+    i2cs2.setClockEn(true);
+    i2cs2.init(define::i2c::speed::STANDARD, gI2c1SendBuff, 32, gI2c1RcvBuff, 32, 0x5A);
+    i2cs2.setIntEn(true);
+	i2cs2.setReceivIsr(isr_receivedI2cs2Data);
+
+    data[0] = 0xAA;
+    data[1] = 0xBB;
+    data[2] = 0xCC;
+    data[3] = 0xDD;
+    i2cs2.setSendBuffer(data, 16);
 
     const char *str = "hello world!!\n\r";
-	
-//	i2c2.send(0x5A, (void*)str, 1, 100000);
 
-	while(1)
-	{
-		
-	}
+    //	i2c2.send(0x5A, (void*)str, 1, 100000);
+
+    while (1)
+    {
+    }
 
     while (1)
     {

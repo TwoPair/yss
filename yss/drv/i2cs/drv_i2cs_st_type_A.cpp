@@ -26,6 +26,7 @@
 #include <__cross_studio_io.h>
 
 #include <drv/i2cs/drv_st_i2cs_type_A.h>
+#include <string.h>
 #include <yss/thread.h>
 
 namespace drv
@@ -34,8 +35,11 @@ namespace drv
 I2cs::I2cs(I2C_TypeDef *peri, void (*clockFunc)(bool en), void (*nvicFunc)(bool en), void (*resetFunc)(void), unsigned int (*getClockFrequencyFunc)(void)) : Drv(clockFunc, nvicFunc, resetFunc)
 {
     mPeri = peri;
-	mRcvBuf = 0;
-	mRcvBufSize = 0;
+    mRcvBuf = 0;
+    mRcvBufSize = 0;
+    mSendBuf = 0;
+    mSendBufSize = 0;
+    mRcvIsr = 0;
 }
 
 bool I2cs::setSpeed(unsigned char speed)
@@ -98,7 +102,7 @@ bool I2cs::setSpeed(unsigned char speed)
     return true;
 }
 
-bool I2cs::init(unsigned char speed, void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2)
+bool I2cs::init(unsigned char speed, void *sendBuf, unsigned short sendBufSize, void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2)
 {
     // 장치 비활성화
     mPeri->CR1 = 0;
@@ -118,17 +122,21 @@ bool I2cs::init(unsigned char speed, void *rcvBuf, unsigned short rcvBufSize, un
     if (addr2 > 0)
         mPeri->OAR2 = I2C_OAR2_OA2EN_Msk | (addr2 & 0xFE);
 
-    // DMA_RX, DMA_TX, 주소 일치 인터럽트, 장치 활성화 설정
-    mPeri->CR1 =  I2C_CR1_ADDRIE_Msk | I2C_CR1_PE_Msk;
+    // 주소 일치, STOP 인터럽트 설정; 장치 활성화 설정
+    mPeri->CR1 = I2C_CR1_ADDRIE_Msk | I2C_CR1_STOPIE_Msk | I2C_CR1_PE_Msk;
 
-	mRcvBuf = (unsigned char*)rcvBuf;
-	mRcvBufSize = rcvBufSize;
+    mSendBuf = (unsigned char *)sendBuf;
+    mSendBufSize = sendBufSize;
+
+    mRcvBuf = (unsigned char *)rcvBuf;
+    mRcvBufSize = rcvBufSize;
 
     return true;
 }
 
 inline void waitUntilComplete(I2C_TypeDef *peri)
 {
+    // 전송 완료까지 대기
     while ((peri->ISR & I2C_ISR_TC) == false)
         thread::yield();
 }
@@ -138,41 +146,74 @@ inline void waitUntilComplete(I2C_TypeDef *peri)
 
 bool I2cs::setSendBuffer(void *src, unsigned int size)
 {
-	return true;
+    if (size > mSendBufSize)
+        return false;
+
+    memcpy(mSendBuf, src, size);
+    mSendingSize = size;
+    return true;
 }
 
 void I2cs::isr(void)
 {
-	register int isr = mPeri->ISR, cr1 = mPeri->CR1;
+    register int isr = mPeri->ISR, cr1 = mPeri->CR1;
+    register unsigned char data;
 
-	if(cr1 & I2C_CR1_ADDRIE_Msk && isr & I2C_ISR_ADDR_Msk)
-	{
-		mPeri->ICR = I2C_ICR_ADDRCF_Msk;
-		if((mPeri->OAR1 & I2C_OAR2_OA2_Msk) >> I2C_OAR2_OA2_Pos == (isr & I2C_ISR_ADDCODE_Msk) >> I2C_ISR_ADDCODE_Pos)
-			mSelectedAddr = define::i2cs::selectedAddr::ADDR1;
-		else
-			mSelectedAddr = define::i2cs::selectedAddr::ADDR2;
-		
-		if(isr & I2C_ISR_DIR_Msk) // 쓰기 모드
-		{
+    // 주소 일치 인터럽트
+    if (cr1 & I2C_CR1_ADDRIE_Msk && isr & I2C_ISR_ADDR_Msk)
+    {
+        mPeri->ICR = I2C_ICR_ADDRCF_Msk;
+        // 일치한 주소가 어떤것인지 구분
+        if ((mPeri->OAR1 & I2C_OAR2_OA2_Msk) >> I2C_OAR2_OA2_Pos == (isr & I2C_ISR_ADDCODE_Msk) >> I2C_ISR_ADDCODE_Pos)
+            mSelectedAddr = define::i2cs::selectedAddr::ADDR1;
+        else
+            mSelectedAddr = define::i2cs::selectedAddr::ADDR2;
 
-		}
-		else // 읽기 모드
-		{
-			mRcvBufIndex = 0;
-			mPeri->CR1 |= I2C_CR1_RXIE_Msk;
-		}
-	}
+        if (isr & I2C_ISR_DIR_Msk) // 쓰기 모드
+        {
+            mSendBufIndex = 0;
+            mPeri->CR1 |= I2C_CR1_TXIE_Msk;
+        }
+        else // 읽기 모드
+        {
+            mRcvBufIndex = 0;
+            mPeri->CR1 |= I2C_CR1_RXIE_Msk;
+        }
+    }
 
-	if(cr1 & I2C_CR1_RXIE_Msk && isr & I2C_ISR_RXNE_Msk)
-	{
-		mRcvBuf[mRcvBufIndex++] = (unsigned char)mPeri->RXDR;
-		if(mRcvBufIndex > mRcvBufSize)
-		{
-			mPeri->CR1 &= I2C_CR1_RXIE_Msk;
-		}
-	}
+    // 데이터 수신 인터럽트
+    if (cr1 & I2C_CR1_RXIE_Msk && isr & I2C_ISR_RXNE_Msk)
+    {
+        data = (unsigned char)mPeri->RXDR;
+        // 데이터 버퍼 초과시, 초과분 버림
+        if (mRcvBufIndex < mRcvBufSize)
+            mRcvBuf[mRcvBufIndex++] = data;
+        if (mRcvIsr)
+            mRcvIsr(data, mRcvBufIndex);
+    }
+
+    if (cr1 & I2C_CR1_TXIE_Msk && isr & I2C_ISR_TXE_Msk)
+    {
+        if (mSendBufIndex < mSendBufSize)
+            mPeri->TXDR = mSendBuf[mSendBufIndex++];
+        else // 데이터 버퍼 초과시, 0xFF 전송
+            mPeri->TXDR = 0xFF;
+    }
+
+    if (cr1 & I2C_CR1_STOPIE_Msk && isr & I2C_ISR_STOPF_Msk)
+    {
+        mPeri->ICR = I2C_ICR_STOPCF_Msk;
+
+        // 송수신 인터럽트 해제
+        mPeri->CR1 &= ~(I2C_CR1_RXIE_Msk | I2C_CR1_TXIE_Msk);
+    }
 }
+
+void I2cs::setReceivIsr(void (*isr)(unsigned char data, unsigned short counter))
+{
+    mRcvIsr = isr;
+}
+
 }
 
 #endif

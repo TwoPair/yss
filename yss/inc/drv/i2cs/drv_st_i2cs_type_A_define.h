@@ -43,9 +43,9 @@ namespace selectedAddr
 {
 enum
 {
-	NONE = 0,
-	ADDR1,
-	ADDR2
+    NONE = 0,
+    ADDR1,
+    ADDR2
 };
 }
 }

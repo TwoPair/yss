@@ -36,16 +36,18 @@ namespace drv
 class I2cs : public sac::Comm, public Drv
 {
     I2C_TypeDef *mPeri;
-	bool setSpeed(unsigned char speed);
-	unsigned char mSelectedAddr;
-	unsigned char *mRcvBuf;
-	unsigned int mRcvBufSize, mRcvBufIndex;
+    bool setSpeed(unsigned char speed);
+    unsigned char mSelectedAddr;
+    unsigned char *mRcvBuf, *mSendBuf;
+    unsigned short mRcvBufSize, mSendBufSize, mRcvBufIndex, mSendBufIndex, mSendingSize;
+	void (*mRcvIsr)(unsigned char data, unsigned short counter);
 
   public:
     I2cs(I2C_TypeDef *peri, void (*clockFunc)(bool en), void (*nvicFunc)(bool en), void (*resetFunc)(void), unsigned int (*getClockFrequencyFunc)(void));
-    bool init(unsigned char speed, void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2 = 0);
+    bool init(unsigned char speed, void *sendBuf, unsigned short sendBufSize, void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2 = 0);
     bool setSendBuffer(void *src, unsigned int size);
     void isr(void);
+    void setReceivIsr(void (*isr)(unsigned char data, unsigned short counter));
 };
 }
 

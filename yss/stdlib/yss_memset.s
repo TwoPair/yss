@@ -123,7 +123,6 @@ unalignedRepeat :
 	ands r3, r2, #0x3
 	bic r2, #0x3
 	subs r4, r4, r2 
-//	lsls r4, r4, #1
 	movs r2, r3
 	add pc, pc, r4
 greaterUnaligned:

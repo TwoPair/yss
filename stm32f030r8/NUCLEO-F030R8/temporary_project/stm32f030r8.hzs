@@ -30,7 +30,13 @@
   <ProjectSessionItem path="example;example;Source Files;prj;src"/>
   <ProjectSessionItem path="example;example;Source Files;yss"/>
   <ProjectSessionItem path="example;example;Source Files;yss;drv"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;drv;clock"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;drv;dma"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;drv;gpio"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;drv;i2c"/>
   <ProjectSessionItem path="example;example;Source Files;yss;drv;i2cs"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;drv;timer"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;drv;uart"/>
   <ProjectSessionItem path="example;example;Source Files;yss;inc"/>
   <ProjectSessionItem path="example;example;Source Files;yss;inc;drv"/>
   <ProjectSessionItem path="example;example;Source Files;yss;inc;drv;i2c"/>
@@ -39,6 +45,9 @@
   <ProjectSessionItem path="example;example;Source Files;yss;instance"/>
   <ProjectSessionItem path="example;example;Source Files;yss;msp"/>
   <ProjectSessionItem path="example;example;Source Files;yss;msp;st"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;stdlib"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;system"/>
+  <ProjectSessionItem path="example;example;Source Files;yss;util"/>
   <ProjectSessionItem path="example;example;System Files"/>
  </Project>
  <Register1>
@@ -62,7 +71,7 @@
  </TraceWindow>
  <Watch1>
   <Watches active="1" update="Twice a Second">
-   <Watchpoint expression="gI2c1RcvBuff" name="gI2c1RcvBuff" radix="-1" linenumber="0" filename=""/>
+   <Watchpoint expression="gI2c1RcvBuff" name="gI2c1RcvBuff" radix="-1" linenumber="0" filename="../temporary_project"/>
   </Watches>
  </Watch1>
  <Watch2>
@@ -75,32 +84,9 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="24" y="55" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="prj/src/main.cpp" selected="1" top="38" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="73" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/system/yss_init.cpp" selected="0" top="50" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="47" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/util/yss_time.cpp" selected="0" top="36" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="115" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/timer/drv_timer_st_type_A.cpp" selected="0" top="95" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="274" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/instance/instance_timer.cpp" selected="0" top="266" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="24" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../.rowley_associates_limited/CrossWorks for ARM/v4/packages/targets/STM32/STM32F030x8.vec" selected="0" top="0" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="86" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../.rowley_associates_limited/CrossWorks for ARM/v4/packages/targets/STM32/STM32_Startup.s" selected="0" top="74" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="93" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/msp/st/msp_stm32f0xx.cpp" selected="0" top="87" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="2" y="80" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="prj/inc/config.h" selected="0" top="60" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="123" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/uart/drv_uart_st_type_A.cpp" selected="0" top="110" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="34" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/Drv.cpp" selected="0" top="24" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="14" y="142" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/instance/instance_i2c.cpp" selected="0" top="89" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1657" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/clock/drv_clock_peripherals.cpp" selected="0" top="1632" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="46" useTextEdit="1" openedFrom="/home/mymy49/library/yss/yss/drv/i2c/drv_i2c_st_type_A.cpp" useBinaryEdit="0" left="0" path="../../../yss/inc/drv/i2c/drv_st_i2c_type_A.h" selected="0" top="35" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="110" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/gpio/drv_gpio_st_type_A.cpp" selected="0" top="98" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="96" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/instance/instance_uart.cpp" selected="0" top="83" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="21" y="201" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/i2c/drv_i2c_st_type_A.cpp" selected="0" top="192" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="2507" useTextEdit="1" openedFrom="/home/mymy49/library/yss/yss/drv/i2cs/drv_i2cs_st_type_A.cpp" useBinaryEdit="0" left="0" path="../../../../../.rowley_associates_limited/CrossWorks for ARM/v4/packages/targets/STM32/include/stm32f030x8.h" selected="0" top="2483" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="33" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/msp/st/msp_stm32f7xx.cpp" selected="0" top="10" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="74" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/dma/drv_dma_st_type_C_stream.cpp" selected="0" top="49" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="30" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/inc/drv/drv_I2c.h" selected="0" top="21" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="41" useTextEdit="1" openedFrom="/home/mymy49/library/yss/yss/drv/i2cs/drv_i2cs_st_type_A.cpp" useBinaryEdit="0" left="0" path="../../../yss/inc/drv/i2cs/drv_st_i2cs_type_A.h" selected="0" top="27" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="27" y="123" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/i2cs/drv_i2cs_st_type_A.cpp" selected="0" top="100" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="36" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/inc/instance/instance_i2cs.h" selected="0" top="16" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="33" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/inc/instance/instance_i2c.h" selected="0" top="9" codecName="UTF-8"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="49" useTextEdit="1" openedFrom="/home/mymy49/library/yss/yss/inc/drv/i2cs/drv_st_i2cs_type_A.h" useBinaryEdit="0" left="0" path="../../../yss/inc/drv/i2cs/drv_st_i2cs_type_A_define.h" selected="0" top="24" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="35" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="prj/src/main.cpp" selected="1" top="23" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="215" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../yss/drv/i2cs/drv_i2cs_st_type_A.cpp" selected="0" top="194" codecName="UTF-8"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="38" y="40" useTextEdit="1" openedFrom="/home/mymy49/library/yss/yss/drv/i2cs/drv_i2cs_st_type_A.cpp" useBinaryEdit="0" left="0" path="../../../yss/inc/drv/i2cs/drv_st_i2cs_type_A.h" selected="0" top="26" codecName="UTF-8"/>
  </Files>
  <ARMCrossStudioWindow activeProject="example" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="ST-LINK/V2" buildConfiguration="THUMB Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="265599"/>
 </session>
