@@ -19,10 +19,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#include <instance/instance_nvic.h>
 #include <instance/instance_clock.h>
 #include <instance/instance_dma.h>
 #include <instance/instance_i2c.h>
+#include <instance/instance_nvic.h>
+
+#if defined(I2C1_ENABLE) && defined(I2CS1_ENABLE)
+#error "I2C1와 I2CS1는 같은 장치 입니다. 활성화는 둘중 하나만 가능합니다."
+#endif
 
 #if defined(I2C1) && defined(I2C1_ENABLE)
 static void setI2c1ClockEn(bool en)
@@ -32,7 +36,7 @@ static void setI2c1ClockEn(bool en)
 
 static void setI2c1IntEn(bool en)
 {
-	nvic.setI2c1En(en);
+    nvic.setI2c1En(en);
 }
 
 static void resetI2c1(void)
@@ -58,6 +62,10 @@ drv::I2c i2c1(
     define::dma::priorityLevel::LOW);
 #endif
 
+#if defined(I2C2_ENABLE) && defined(I2CS2_ENABLE)
+#error "I2C2와 I2CS2는 같은 장치 입니다. 활성화는 둘중 하나만 가능합니다."
+#endif
+
 #if defined(I2C2) && defined(I2C2_ENABLE)
 static void setI2c2ClockEn(bool en)
 {
@@ -66,7 +74,7 @@ static void setI2c2ClockEn(bool en)
 
 static void setI2c2IntEn(bool en)
 {
-	nvic.setI2c2En(en);
+    nvic.setI2c2En(en);
 }
 
 static void resetI2c2(void)
@@ -90,6 +98,51 @@ drv::I2c i2c2(
     YSS_DMA_MAP_I2C2_RX_CHANNEL,
     getI2c2ClockFrequency,
     define::dma::priorityLevel::LOW);
+
+extern "C"
+{
+    void I2C2_IRQHandler(void)
+    {
+//		i2c2.
+    }
+}
+#endif
+
+#if defined(I2C2) && defined(I2CS2_ENABLE)
+static void setI2c2ClockEn(bool en)
+{
+    clock.peripheral.setI2c2En(en);
+}
+
+static void setI2c2IntEn(bool en)
+{
+    nvic.setI2c2En(en);
+}
+
+static void resetI2c2(void)
+{
+    clock.peripheral.resetI2c2();
+}
+
+static unsigned int getI2c2ClockFrequency(void)
+{
+    return clock.getApb1ClkFreq();
+}
+
+drv::I2cs i2cs2(
+    I2C2,
+    setI2c2ClockEn,
+    setI2c2IntEn,
+    resetI2c2,
+    getI2c2ClockFrequency);
+
+extern "C"
+{
+    void I2C2_IRQHandler(void)
+    {
+		i2cs2.isr();
+    }
+}
 #endif
 
 #if defined(I2C3) && defined(I2C3_ENABLE)

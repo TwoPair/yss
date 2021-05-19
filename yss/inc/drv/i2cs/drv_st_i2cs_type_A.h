@@ -14,36 +14,41 @@
 //  Home Page : http://cafe.naver.com/yssoperatingsystem
 //  Copyright 2021. yss Embedded Operating System all right reserved.
 //
-//  주담당자 : 아이구 (mymy49@nate.com) 2021.02.06 ~ 현재
+//  주담당자 : 아이구 (mymy49@nate.com) 2021.05.18 ~ 현재
 //  부담당자 : -
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef YSS_INSTANCE_I2C__H_
-#define YSS_INSTANCE_I2C__H_
+#ifndef YSS_DRV_I2CS_ST_TYPE_A__H_
+#define YSS_DRV_I2CS_ST_TYPE_A__H_
 
-#include <drv/drv_I2c.h>
+#include <yss/mcu.h>
 
-#if defined(I2C1)
-extern drv::I2c i2c1;
-#if defined(YSS_DRV_I2CS_ST_TYPE_A__H_)
-extern drv::I2cs i2cs1;
-#endif
-#endif
+#if defined(STM32F7) || defined(STM32F0)
 
-#if defined(I2C2)
-extern drv::I2c i2c2;
-#if defined(YSS_DRV_I2CS_ST_TYPE_A__H_)
-extern drv::I2cs i2cs2;
-#endif
-#endif
+#include "drv/drv_Dma.h"
+#include "drv_st_i2cs_type_A_define.h"
+#include <drv/Drv.h>
+#include <sac/Comm.h>
 
-#if defined(I2C3)
-extern drv::I2c i2c3;
-#endif
+namespace drv
+{
+class I2cs : public sac::Comm, public Drv
+{
+    I2C_TypeDef *mPeri;
+	bool setSpeed(unsigned char speed);
+	unsigned char mSelectedAddr;
+	unsigned char *mRcvBuf;
+	unsigned int mRcvBufSize, mRcvBufIndex;
 
-#if defined(I2C4)
-extern drv::I2c i2c4;
+  public:
+    I2cs(I2C_TypeDef *peri, void (*clockFunc)(bool en), void (*nvicFunc)(bool en), void (*resetFunc)(void), unsigned int (*getClockFrequencyFunc)(void));
+    bool init(unsigned char speed, void *rcvBuf, unsigned short rcvBufSize, unsigned char addr1, unsigned char addr2 = 0);
+    bool setSendBuffer(void *src, unsigned int size);
+    void isr(void);
+};
+}
+
 #endif
 
 #endif

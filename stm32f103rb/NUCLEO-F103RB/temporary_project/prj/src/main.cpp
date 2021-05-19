@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
     timer2.setIntEn(true);
     timer2.start();
 
+	addr[0] = 0x12;
+	addr[1] = 0x34;
+
     while (1)
     {
 		i2c2.send(0x5A, addr, 2, 10000000);

@@ -14,36 +14,43 @@
 //  Home Page : http://cafe.naver.com/yssoperatingsystem
 //  Copyright 2021. yss Embedded Operating System all right reserved.
 //
-//  주담당자 : 아이구 (mymy49@nate.com) 2021.02.06 ~ 현재
+//  주담당자 : 아이구 (mymy49@nate.com) 2016.04.30 ~ 현재
 //  부담당자 : -
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef YSS_INSTANCE_I2C__H_
-#define YSS_INSTANCE_I2C__H_
+#ifndef YSS_DRV_I2CS_ST_TYPE_A_DEFINE__H_
+#define YSS_DRV_I2CS_ST_TYPE_A_DEFINE__H_
 
-#include <drv/drv_I2c.h>
+#include <yss/mcu.h>
 
-#if defined(I2C1)
-extern drv::I2c i2c1;
-#if defined(YSS_DRV_I2CS_ST_TYPE_A__H_)
-extern drv::I2cs i2cs1;
-#endif
-#endif
+#if defined(STM32F7) || defined(STM32F0)
 
-#if defined(I2C2)
-extern drv::I2c i2c2;
-#if defined(YSS_DRV_I2CS_ST_TYPE_A__H_)
-extern drv::I2cs i2cs2;
-#endif
-#endif
+namespace define
+{
+namespace i2cs
+{
+namespace speed
+{
+enum
+{
+    STANDARD = 0,
+    FAST = 1,
+    FAST_PLUS = 2,
+};
+}
+namespace selectedAddr
+{
+enum
+{
+	NONE = 0,
+	ADDR1,
+	ADDR2
+};
+}
+}
+}
 
-#if defined(I2C3)
-extern drv::I2c i2c3;
-#endif
-
-#if defined(I2C4)
-extern drv::I2c i2c4;
 #endif
 
 #endif

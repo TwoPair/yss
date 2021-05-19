@@ -27,6 +27,7 @@
 #if defined(STM32F7) || defined(STM32F0)
 
 #include "i2c/drv_st_i2c_type_A.h"
+#include "i2cs/drv_st_i2cs_type_A.h"
 
 #elif defined(STM32F4) || defined(STM32F1)
 

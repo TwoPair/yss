@@ -53,10 +53,9 @@ int main(void)
 	gpioB.setAsOutput(12);
 	gpioB.setOutput(12, true);
 
-	i2c2.setClockEn(true);
-	i2c2.initAsSlave(define::i2c::speed::STANDARD, gI2c1RcvBuff, 32, 0x5A);
-//	i2c2.init(define::i2c::speed::STANDARD);
-	i2c2.setIntEn(true);
+	i2cs2.setClockEn(true);
+	i2cs2.init(define::i2c::speed::STANDARD, gI2c1RcvBuff, 32, 0x5A);
+	i2cs2.setIntEn(true);
 
     const char *str = "hello world!!\n\r";
 	
